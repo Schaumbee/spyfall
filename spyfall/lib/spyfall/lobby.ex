@@ -1,14 +1,4 @@
 defmodule Spyfall.Lobby do
-  def handle_call(:start, _from, state) do
-    {players, min} = state
-
-    if Set.size(players) < min do
-      {:reply, {:error, "At least #{min} players are needed to start"}, state}
-    else
-      {:reply, Spyfall.Game.start_link(Set.to_list(players)), state}
-    end
-  end
-
   def start_link do
     Agent.start_link(fn -> HashSet.new end)
   end

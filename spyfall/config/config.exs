@@ -2,6 +2,7 @@ use Mix.Config
 
 config :spyfall,
 token: "",
+channel: "spyfall",
 min_players: 3,
 locations: [
   {

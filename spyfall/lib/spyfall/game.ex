@@ -19,7 +19,7 @@ defmodule Spyfall.Game do
     GenServer.call(game, :players)
   end
 
-  ## Server
+  ## Server (callback)
 
   def init(player_names) do
     {location, roles} = random_location
