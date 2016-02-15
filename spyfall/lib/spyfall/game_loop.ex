@@ -55,6 +55,7 @@ defmodule Spyfall.GameLoop do
           {:error, error} -> error
         end
       true ->
+        # TODO: this should just crash instead of fall back to nil
         nil
     end
 

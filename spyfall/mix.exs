@@ -14,7 +14,7 @@ defmodule Spyfall.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :slack],
+    [applications: [:logger, :slack, :httpotion],
      mod: {Spyfall, []}]
   end
 
@@ -28,7 +28,10 @@ defmodule Spyfall.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:slack, "~> 0.4.2"},
-     {:websocket_client, git: "https://github.com/jeremyong/websocket_client"}]
+    [
+      {:httpotion, "~> 2.2.0"},
+      {:slack, "~> 0.4.2"},
+      {:websocket_client, git: "https://github.com/jeremyong/websocket_client"}
+    ]
   end
 end
