@@ -26,16 +26,4 @@ defmodule Spyfall.Lobby do
   def players(lobby) do
     Agent.get(lobby, &Set.to_list(&1))
   end
-
-  def start_game(lobby) do
-    min = Application.get_env(:spyfall, :min_players)
-
-    Agent.get_and_update(lobby, fn players ->
-      if Set.size(players) < min do
-        {{:error, "At least #{min} players are needed to start"}, players}
-      else
-        {Spyfall.Game.start_link(Set.to_list(players)), players}
-      end
-    end)
-  end
 end

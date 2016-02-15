@@ -5,6 +5,7 @@ defmodule Spyfall.Bot do
 
   def handle_connect(slack, state) do
     IO.puts "Connected as #{slack.me.name}"
+
     chan = find_channel_id(slack.channels)
     users = map_user_ids_to_names(slack.users)
     {:ok, loop} = Spyfall.GameLoop.start_link
@@ -16,9 +17,17 @@ defmodule Spyfall.Bot do
     {loop, users, chan} = game
 
     username = users[user]
-    IO.puts "RECEIVE MESSAGE: #{text} FROM: #{username}"
-    response = Spyfall.GameLoop.respond(loop, username, text)
-    IO.puts "SEND MESSAGE: #{response}"
+    responses = Spyfall.GameLoop.respond(loop, username, text)
+
+    Enum.each(responses, fn response ->
+      case response do
+        {:broadcast, message} ->
+          IO.puts "BROADCAST: #{message}"
+        {:private, {user, message}} ->
+          IO.puts "PRIVATE TO: #{user}, MESSAGE: #{message}"
+      end
+    end)
+
     {:ok, game}
   end
 

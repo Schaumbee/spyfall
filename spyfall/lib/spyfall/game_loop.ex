@@ -6,8 +6,11 @@ defmodule Spyfall.GameLoop do
   end
 
   def respond(game, player, message) do
-    IO.puts "doing a call"
-    GenServer.call(game, {:message, player, message})
+    if message =~ ~r/^start$/ do
+      GenServer.call(game, :start)
+    else
+      GenServer.call(game, {:message, player, message})
+    end
   end
 
   # Server (callback)
@@ -15,6 +18,21 @@ defmodule Spyfall.GameLoop do
   def init(:ok) do
     {:ok, lobby} = Spyfall.Lobby.start_link
     {:ok, {:lobby, lobby}}
+  end
+
+  def handle_call(:start, _from, {:lobby, lobby} = state) do
+    players = Spyfall.Lobby.players(lobby)
+    case Spyfall.Game.start_link(players) do
+      {:ok, game} ->
+        start = {:broadcast, "Starting the game"}
+        roles = for role <- Spyfall.Game.player_roles(game) do
+          {:private, role}
+        end
+
+        {:reply, [start|roles], {:game, game}}
+      {:error, error} ->
+        {:reply, [{:broadcast, error}], state}
+    end
   end
 
   def handle_call({:message, player, message}, _from, {:lobby, lobby} = state) do
@@ -40,10 +58,14 @@ defmodule Spyfall.GameLoop do
         nil
     end
 
-    {:reply, reply, state}
+    {:reply, [{:broadcast, reply}], state}
   end
 
-  def handle_call({:message, message}, _from, {:game, game} = state) do
-    {:reply, "game", state}
+  def handle_call({:message, player, message}, _from, {:game, game} = state) do
+    {:reply, [{:broadcast, "In the game"}], state}
+  end
+
+  def handle_call(:start, _from, {:game, game} = state) do
+    {:reply, [{:broadcast, "There is already a game being played"}], state}
   end
 end

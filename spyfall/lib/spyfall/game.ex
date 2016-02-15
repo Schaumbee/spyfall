@@ -4,7 +4,13 @@ defmodule Spyfall.Game do
   ## Client API
 
   def start_link(player_names) do
-    GenServer.start_link(__MODULE__, player_names)
+    min = Application.get_env(:spyfall, :min_players)
+
+    if length(player_names) < min do
+      {:error, "At least #{min} players are needed to start the game"}
+    else
+      GenServer.start_link(__MODULE__, player_names)
+    end
   end
 
   def spy(game) do
@@ -17,6 +23,10 @@ defmodule Spyfall.Game do
 
   def players(game) do
     GenServer.call(game, :players)
+  end
+
+  def player_roles(game) do
+    GenServer.call(game, :roles)
   end
 
   ## Server (callback)
@@ -34,6 +44,20 @@ defmodule Spyfall.Game do
 
   def handle_call(:players, _from, {_, players} = state) do
     {:reply, players, state}
+  end
+
+  def handle_call(:roles, _from, {location, players} = state) do
+    roles = for {name, role} <- players do
+      desc = if role == :spy do
+        "You are the spy!"
+      else
+        "Location: #{location}; your role: #{role}"
+      end
+
+      {name, desc}
+    end
+
+    {:reply, roles, state}
   end
 
   defp assign_roles(player_names, roles) do

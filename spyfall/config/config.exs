@@ -343,8 +343,5 @@ locations: [
   }
 ]
 
-if Mix.env == :test do
-  import_config "test.exs"
-end
-
+import_config "#{Mix.env}.exs"
 import_config "secret.exs"
