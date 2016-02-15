@@ -3,8 +3,8 @@ defmodule Spyfall.LobbyTest do
 
   setup do
     min = 3
-    {:ok, lobby} = Spyfall.Lobby.start_link(min)
-    {:ok, lobby: lobby, min: min}
+    {:ok, lobby} = Spyfall.Lobby.start_link
+    {:ok, lobby: lobby}
   end
 
   test "players can be added to lobby", %{lobby: lobby} do
@@ -40,7 +40,9 @@ defmodule Spyfall.LobbyTest do
     assert message == "player1 is not in the lobby"
   end
 
-  test "game cannot start without minimum number of people", %{lobby: lobby, min: min} do
+  test "game cannot start without minimum number of people", %{lobby: lobby} do
+    min = Application.get_env(:spyfall, :min_players)
+
     for x <- 1..(min - 1) do
       Spyfall.Lobby.join(lobby, "player#{x}")
     end

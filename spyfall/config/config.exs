@@ -1,6 +1,8 @@
 use Mix.Config
 
-config :spyfall, locations: [
+config :spyfall,
+min_players: 3,
+locations: [
   {
     "Airplane",
     [
