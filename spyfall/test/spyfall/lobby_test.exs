@@ -2,7 +2,6 @@ defmodule Spyfall.LobbyTest do
   use ExUnit.Case, async: true
 
   setup do
-    min = 3
     {:ok, lobby} = Spyfall.Lobby.start_link
     {:ok, lobby: lobby}
   end
