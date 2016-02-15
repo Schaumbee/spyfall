@@ -1,6 +1,7 @@
 use Mix.Config
 
-config :spyfall, locations: [
+config :spyfall,
+locations: [
   {
     "Location",
     [

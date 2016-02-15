@@ -1,6 +1,8 @@
 /spyfall/_build
 /spyfall/cover
 /spyfall/deps
+/spyfall/config/secret.exs
+
 erl_crash.dump
 *.ez
 

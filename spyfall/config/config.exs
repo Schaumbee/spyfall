@@ -1,6 +1,7 @@
 use Mix.Config
 
 config :spyfall,
+token: "",
 min_players: 3,
 locations: [
   {
@@ -344,3 +345,5 @@ locations: [
 if Mix.env == :test do
   import_config "test.exs"
 end
+
+import_config "secret.exs"

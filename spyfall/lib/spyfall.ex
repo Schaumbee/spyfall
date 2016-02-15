@@ -7,7 +7,7 @@ defmodule Spyfall do
     import Supervisor.Spec, warn: false
 
     children = [
-      # worker(Spyfall.Bot, ["xoxb-21349507894-PV968wLa21qEt3oqNjQiTigF", []])
+      worker(Spyfall.Bot, [Application.get_env(:spyfall, :token), []])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
