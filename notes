@@ -1,0 +1,54 @@
+Instructions
+============
+Command: ^instructions|help$
+    TODO: blurb with instructions
+        -> recently requested: "One of your agents has already requested this intel. Look into our chat history to find it"
+
+    ? Might be good to have a rate limit on this one since it will be a wall of text
+
+
+Lobby
+=====
+Command: ^lobby$
+    If no game in session, lists the players waiting to play
+
+Command: ^join$
+    Joins the game using your slack handle
+        -> "[player] has joined the game"
+
+Command: ^leave$
+    Leaves the current lobbied game
+        -> "[player] has left the game"
+
+Command: ^start [rounds per game]$
+    Begins the lobbied game
+        -> no game: "Welcome to spyfall ... (instructions) ... Game X has begun! [player], its your turn."
+        -> game: "There is already a game in progress. You must wait until it finishes to begin a new game"
+
+    After the game has begun, players will get a direct message from James Bond about their role
+        -> spy: "You are the spy! Try and guess the location, but don't give away your true identity. We have intel that you may be in one of the following locations (list locations)"
+        -> normal: "You are not the spy!" 
+
+    * "You are [not] the spy" message should be in bold
+    ? Might want to restrict "start" to certain players
+
+
+Guessing
+========
+Command: ^are we .* [location]$
+    (eg. are we at the supermarket? are we on a submarine?)
+
+    If the player issuing the command is the spy, this guesses the location
+    If the location is invalid, nothing happens
+        -> win: "Good work, Agent [name]! I knew we could count on you"
+        -> lose: "You blew your cover, Agent [name]. The correct location was: [location]"
+
+Command: [name] is the spy$
+    If the player issuing the command is not the spy, trigger the countdown (1 minute)
+        -> "@channel [accuser] believes that [accused] is the spy! You have 1 minute to 'disagree' before we reveal their true identity"
+
+    Accused cannot disagree
+    After time expires
+        -> correct: "You're right! [accused] is the spy!"
+        -> wrong: "You're wrong! [accused] isn't the spy; [spy] is the spy!"
+

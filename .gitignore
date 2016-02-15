@@ -1,0 +1,7 @@
+/spyfall/_build
+/spyfall/cover
+/spyfall/deps
+erl_crash.dump
+*.ez
+
+/.vagrant
