@@ -56,11 +56,13 @@ defmodule Spyfall.GameLoop do
         message = ~s(The game has begun! Here are the possible locations:\n```#{locations}```)
         start = {:broadcast, message}
 
+        first_turn = {:broadcast, "#{Enum.random(players)}, it's your turn first."}
+
         roles = for role <- Spyfall.Game.player_roles(game) do
           {:private, role}
         end
 
-        {:reply, [start|roles], {:game, game}}
+        {:reply, [start, first_turn] ++ roles, {:game, game}}
       {:error, error} ->
         {:reply, [{:broadcast, error}], state}
     end
