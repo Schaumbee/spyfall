@@ -1,6 +1,7 @@
 defmodule Spyfall.GameLoop do
   use GenServer
 
+  @help_request ~r/^(?:help|commands|instructions)$/i
   @location_guess ~r/^location:\s*(?<location>[a-zA-Z ]+)$/i
   @spy_guess ~r/^@?(?<spy>\w+):? is the spy!?$/i
 
@@ -9,10 +10,13 @@ defmodule Spyfall.GameLoop do
   end
 
   def respond(game, player, message) do
-    if message =~ ~r/^start$/i do
-      GenServer.call(game, :start)
-    else
-      GenServer.call(game, {:message, player, message})
+    cond do
+      message =~ @help_request ->
+        GenServer.call(game, {:help, player, message})
+      message =~ ~r/^start$/i ->
+        GenServer.call(game, :start)
+      true ->
+        GenServer.call(game, {:message, player, message})
     end
   end
 
@@ -23,11 +27,32 @@ defmodule Spyfall.GameLoop do
     {:ok, {:lobby, lobby}}
   end
 
+  def handle_call({:help, player, type}, _from, state) do
+    messages = case type do
+      "help" ->
+        [Application.get_env(:spyfall, :instructions),
+          Application.get_env(:spyfall, :commands)]
+      "commands" ->
+        [Application.get_env(:spyfall, :commands)]
+      "instructions" ->
+        [Application.get_env(:spyfall, :instructions)]
+    end
+
+    responses = for message <- messages do
+      {:private, {player, message}}
+    end
+
+    {:reply, responses, state}
+  end
+
   def handle_call(:start, _from, {:lobby, lobby} = state) do
     players = Spyfall.Lobby.players(lobby)
     case Spyfall.Game.start_link(players) do
       {:ok, game} ->
-        start = {:broadcast, "Starting the game"}
+        locations = Spyfall.Game.pretty_locations(game)
+        message = ~s(The game has begun! Here are the possible locations:\n```#{locations}```)
+        start = {:broadcast, message}
+
         roles = for role <- Spyfall.Game.player_roles(game) do
           {:private, role}
         end

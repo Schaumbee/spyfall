@@ -30,6 +30,10 @@ defmodule Spyfall.Game do
     GenServer.call(game, :roles)
   end
 
+  def pretty_locations(game) do
+    GenServer.call(game, :format_locations)
+  end
+
   ## Server (callback)
 
   def init(player_names) do
@@ -92,6 +96,19 @@ defmodule Spyfall.Game do
     end
 
     {:reply, roles, state}
+  end
+
+  def handle_call(:format_locations, _from, state) do
+    names = for {name, _} <- @locations do name end
+    max_length = String.length(Enum.max_by(names, &String.length(&1)))
+
+    groups = Enum.chunk(names, 3, 3, [])
+
+    formatted_locations = Enum.join(Enum.map(groups, fn group ->
+      Enum.join(Enum.map(group, &String.ljust(&1, max_length)), " | ")
+    end), "\n")
+
+    {:reply, formatted_locations, state}
   end
 
   defp assign_roles(player_names, roles) do
