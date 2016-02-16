@@ -26,4 +26,8 @@ defmodule Spyfall.Lobby do
   def players(lobby) do
     Agent.get(lobby, &Set.to_list(&1))
   end
+
+  def teardown(lobby) do
+    Agent.stop(lobby)
+  end
 end

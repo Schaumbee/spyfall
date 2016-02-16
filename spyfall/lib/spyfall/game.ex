@@ -34,6 +34,10 @@ defmodule Spyfall.Game do
     GenServer.call(game, :format_locations)
   end
 
+  def finish(game) do
+    GenServer.stop(game)
+  end
+
   ## Server (callback)
 
   def init(player_names) do

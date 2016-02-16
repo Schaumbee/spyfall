@@ -47,8 +47,11 @@ defmodule Spyfall.GameLoop do
 
   def handle_call(:start, _from, {:lobby, lobby} = state) do
     players = Spyfall.Lobby.players(lobby)
+
     case Spyfall.Game.start_link(players) do
       {:ok, game} ->
+        Spyfall.Lobby.teardown(lobby)
+
         locations = Spyfall.Game.pretty_locations(game)
         message = ~s(The game has begun! Here are the possible locations:\n```#{locations}```)
         start = {:broadcast, message}
@@ -61,6 +64,10 @@ defmodule Spyfall.GameLoop do
       {:error, error} ->
         {:reply, [{:broadcast, error}], state}
     end
+  end
+
+  def handle_call(:start, _from, state) do
+    {:reply, [{:broadcast, "There is already a game being played"}], state}
   end
 
   def handle_call({:message, player, message}, _from, {:lobby, lobby} = state) do
@@ -103,16 +110,12 @@ defmodule Spyfall.GameLoop do
     end
   end
 
-  def handle_call(:start, _from, state) do
-    {:reply, [{:broadcast, "There is already a game being played"}], state}
-  end
-
   defp guess_location({:game, game} = state, player, guess) do
     case Spyfall.Game.guess_location(game, player, guess) do
       {:ok, :correct, _} ->
-        finish_game("Good work, Agent #{player}! I knew we could count on you.")
+        finish_game(game, "Good work, Agent #{player}! I knew we could count on you.")
       {:ok, :incorrect, location} ->
-        finish_game("You blew your cover, Agent #{player}! The correct location was: #{location}")
+        finish_game(game, "You blew your cover, Agent #{player}! The correct location was: #{location}")
       {:error, msg} ->
         IO.puts "ERROR: #{msg}"
         {:reply, [], state}
@@ -122,16 +125,17 @@ defmodule Spyfall.GameLoop do
   defp guess_spy({:game, game} = state, player, guess) do
     case Spyfall.Game.guess_spy(game, player, guess) do
       {:ok, :correct, name} ->
-        finish_game("You're right! #{name} is the spy!")
+        finish_game(game, "You're right! #{name} is the spy!")
       {:ok, :incorrect, name} ->
-        finish_game("You're wrong! #{guess} isn't the spy; #{name} is the spy!")
+        finish_game(game, "You're wrong! #{guess} isn't the spy; #{name} is the spy!")
       {:error, msg} ->
         IO.puts "ERROR: #{msg}"
         {:reply, [], state}
     end
   end
 
-  defp finish_game(message) do
+  defp finish_game(game, message) do
+    Spyfall.Game.finish(game)
     {:ok, new_lobby} = Spyfall.Lobby.start_link
     {:reply, [{:broadcast, message}], {:lobby, new_lobby}}
   end
