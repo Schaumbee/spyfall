@@ -3,7 +3,7 @@ defmodule Spyfall.Bot do
 
   @channel Application.get_env(:spyfall, :channel)
 
-  def handle_connect(slack, state) do
+  def handle_connect(slack, _state) do
     IO.puts "Connected as #{slack.me.name}"
 
     chan = find_channel_id(slack.channels)
@@ -13,7 +13,7 @@ defmodule Spyfall.Bot do
     {:ok, {loop, users, chan}}
   end
 
-  def handle_message(message = %{type: "message", text: text}, slack, game) do
+  def handle_message(message = %{type: "message", text: _}, slack, game) do
     if should_reply?(message, game) do
       reply(message, slack, game)
     else
@@ -22,8 +22,7 @@ defmodule Spyfall.Bot do
 
   end
 
-  def handle_message(message, _slack, game) do
-    IO.puts inspect message
+  def handle_message(_message, _slack, game) do
     {:ok, game}
   end
 
@@ -51,7 +50,7 @@ defmodule Spyfall.Bot do
 
   defp find_channel_id(channels) do
     # TODO: What if the channel doesn't exist?
-    {id, _} = Enum.find(channels, fn {id, channel} ->
+    {id, _} = Enum.find(channels, fn {_, channel} ->
       channel.name == @channel
     end)
 

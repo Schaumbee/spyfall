@@ -2,7 +2,7 @@ defmodule Spyfall.GameLoop do
   use GenServer
 
   @location_guess ~r/^location:\s*(?<location>[a-zA-Z ]+)$/i
-  @spy_guess ~r/^(?<spy>\w+) is the spy!?$/i
+  @spy_guess ~r/^@?(?<spy>\w+):? is the spy!?$/i
 
   def start_link do
     GenServer.start_link(__MODULE__, :ok)
@@ -65,7 +65,7 @@ defmodule Spyfall.GameLoop do
     {:reply, [{:broadcast, reply}], state}
   end
 
-  def handle_call({:message, player, message}, _from, {:game, game} = state) do
+  def handle_call({:message, player, message}, _from, state) do
     cond do
       message =~ @location_guess ->
         guess = Regex.named_captures(@location_guess, message)["location"]
@@ -78,7 +78,7 @@ defmodule Spyfall.GameLoop do
     end
   end
 
-  def handle_call(:start, _from, {:game, game} = state) do
+  def handle_call(:start, _from, state) do
     {:reply, [{:broadcast, "There is already a game being played"}], state}
   end
 
