@@ -6,7 +6,7 @@ Spyfall is a text adventure unlike any other, one in which you get to be a spy a
 
 Spyfall is played over several rounds, and at the start of each round all players receive the same location and a role that is specific to tht location — except that one player is told that he is the "Spy" instead of receiving a lotcation. Players then start asking each other questions — "Why are you dressed so strangely?" or "When was the last time we got a payday?" or anything else you can come up with — trying to guess who among them is the spy. The spy doesn't know where he is, so he has to listen carefully. When it's his time to answer, he'd better create a good story!
 
-At any time during a round, one player may accuse another of being a spy. If the spy is uncovered, all other players win. However, the spy can himself end a round by announcing that he understands what the secret location is; if his guess is correct, only the spy wins.
+At any time during a round, one player may accuse another of being a spy. It is a good idea to discuss your guess with others before officially submitting your guess. If the spy is uncovered, all other players win. However, the spy can himself end a round by announcing that he understands what the secret location is; if his guess is correct, only the spy wins.
 ),
 
 commands: ~s(
@@ -24,7 +24,7 @@ When there is no game current in play, you can use the following commands.
 Once in the game, you will ask other players questions. To record your guess, use the following commands.
 
 `location: [location]` if you are the spy, this acts as your guess and ends the game
-`[name] is the spy!` if you are not the spy, this acts as your guess and ends the game
+`spy: [spy]` if you are not the spy, this acts as your guess and ends the game
 
 *Help*
 You can issue these commands at any time. Running these commands will send a direct message to you with the information.

@@ -3,7 +3,7 @@ defmodule Spyfall.GameLoop do
 
   @help_request ~r/^(?:help|commands|instructions)$/i
   @location_guess ~r/^location:\s*(?<location>[a-zA-Z ]+)$/i
-  @spy_guess ~r/^@?(?<spy>\w+):? is the spy!?$/i
+  @spy_guess ~r/^spy:\s*(?<spy>[a-zA-Z]+)$/i
 
   def start_link do
     GenServer.start_link(__MODULE__, :ok)
