@@ -6,9 +6,14 @@ defmodule Spyfall.Bot do
   def handle_connect(slack, _state) do
     IO.puts "Connected as #{slack.me.name}"
 
+    IO.puts "finding channel id for #{@channel}"
     chan = find_channel_id(slack.channels)
+    IO.puts "found channel id"
     users = map_user_ids_to_names(slack.users)
+    IO.puts "mapped users"
     {:ok, loop} = Spyfall.GameLoop.start_link
+
+    IO.puts "starting game loop"
 
     {:ok, {loop, users, chan}}
   end
@@ -51,6 +56,7 @@ defmodule Spyfall.Bot do
   defp find_channel_id(channels) do
     # TODO: What if the channel doesn't exist?
     {id, _} = Enum.find(channels, fn {_, channel} ->
+      IO.puts channel.name
       channel.name == @channel
     end)
 
