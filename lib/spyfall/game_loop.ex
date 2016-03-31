@@ -53,7 +53,7 @@ defmodule Spyfall.GameLoop do
         Spyfall.Lobby.teardown(lobby)
 
         locations = Spyfall.Game.pretty_locations(game)
-        message = ~s(The game has begun! Here are the possible locations:\n```#{locations}```)
+        message = ~s(The game has begun! Here are the possible locations:\n```#{locations}```\nPlayers: #{Enum.join(players, ", ")})
         start = {:broadcast, message}
 
         first_turn = {:broadcast, "#{Enum.random(players)}, it's your turn first."}
